@@ -51,8 +51,8 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
     
     private int hitBallPositionX = 0;
     private int hitBallPositionY = 0;
-    private int hitballDeltaX = 0;
-    private int hitballDeltaY = 0;
+    private int hitBallDeltaX = 0;
+    private int hitBallDeltaY = 0;
     
     private int startStopPlayerOnePadPosition = playerOnePadPositionY;
     private int startStopPlayerTwoPadPosition = playerTwoPadPositionY;
@@ -77,6 +77,11 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
     public Pong() throws Exception {
         
         int socket = 2407;
+        //String ip = "localhost";
+        String ip = "192.168.0.47";//ASUS
+        //String ip = "192.168.0.34";//VAIO
+        
+        
         
         try {
             System.out.println( "=====Try TCP Client=====" );
@@ -84,18 +89,15 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             inFromUser = new BufferedReader( new InputStreamReader( System.in ) );
             System.out.println( "*****Trying Connection To Server In Socket " + socket  + " *****" );
             
-            
-            //clientSocket = new Socket( "localhost", socket );
-            clientSocket = new Socket( "192.168.0.47", socket );//ASUS
-            clientSocket = new Socket( "192.168.0.34", socket );//VAIO
+            clientSocket = new Socket( ip, socket );
             
             System.out.println( "=====Successful Connection To Server=====" );
             outToServer = new DataOutputStream( clientSocket.getOutputStream() );
             inFromServer = new BufferedReader( new InputStreamReader( clientSocket.getInputStream() ) );
             
-            System.out.print( "Client: ");
-            String messageToServer = inFromUser.readLine();//THIS <-----------------------------------------------------
-            outToServer.writeBytes( messageToServer + '\n' );//THIS <-----------------------------------------------------
+            //System.out.print( "Client: ");
+            //String messageToServer = inFromUser.readLine();//THIS <-----------------------------------------------------
+            //outToServer.writeBytes( messageToServer + '\n' );//THIS <-----------------------------------------------------
             
             //serverMessage = inFromServer.readLine();//THIS <-----------------------------------------------------
             //System.out.println( "Server: " + serverMessage );
@@ -115,7 +117,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             System.out.println( "=====Successful Connection From Client=====" );
             inFromClient = new BufferedReader( new InputStreamReader( connectionSocket.getInputStream() ) );
             outToClient = new DataOutputStream( connectionSocket.getOutputStream() );
-            System.out.println( "Waiting Text From Client");
+            System.out.println( "Waiting Client" );
             clientMessage = inFromClient.readLine();//THIS <-----------------------------------------------------
             
             //outToClient.writeBytes( clientMessage );//THIS <-----------------------------------------------------
@@ -185,8 +187,8 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 
                 hitBallPositionX = ballPositionX;
                 hitBallPositionY = ballPositionY;
-                hitballDeltaX = ballDeltaX;
-                hitballDeltaY = ballDeltaY;
+                hitBallDeltaX = ballDeltaX;
+                hitBallDeltaY = ballDeltaY;
             }
 
             //will the ball go off the left side?
@@ -224,8 +226,8 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 }
                 hitBallPositionX = ballPositionX;
                 hitBallPositionY = ballPositionY;
-                hitballDeltaX = ballDeltaX;
-                hitballDeltaY = ballDeltaY;
+                hitBallDeltaX = ballDeltaX;
+                hitBallDeltaY = ballDeltaY;
             }
 
             //will the ball go off the right side?
@@ -263,8 +265,8 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 }
                 hitBallPositionX = ballPositionX;
                 hitBallPositionY = ballPositionY;
-                hitballDeltaX = ballDeltaX;
-                hitballDeltaY = ballDeltaY;
+                hitBallDeltaX = ballDeltaX;
+                hitBallDeltaY = ballDeltaY;
             }
 
             //move the ball
@@ -320,8 +322,8 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             
             g.drawString( "ballX: " + String.valueOf( hitBallPositionX ), 200, gameTableBottomtEnd - 40 );
             g.drawString( "ballY: " + String.valueOf( hitBallPositionY ), 500, gameTableBottomtEnd - 40 );
-            g.drawString( "DeltaX: " + String.valueOf( hitballDeltaX ), 200, gameTableBottomtEnd - 20 );
-            g.drawString( "DeltaY: " + String.valueOf( hitballDeltaY ), 500, gameTableBottomtEnd - 20 );
+            g.drawString( "DeltaX: " + String.valueOf( hitBallDeltaX ), 200, gameTableBottomtEnd - 20 );
+            g.drawString( "DeltaY: " + String.valueOf( hitBallDeltaY ), 500, gameTableBottomtEnd - 20 );
 
             //draw "goal lines" on each side
             g.drawLine( playerOneRight, 0, playerOneRight, gameTableBottomtEnd + 100 /*getHeight()*/ );
