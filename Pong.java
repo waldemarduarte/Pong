@@ -58,6 +58,20 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
     private int startStopPlayerTwoPadPosition = playerTwoPadPositionY;
     
     private boolean amIPlayerOne = true;
+    
+    //Client
+    BufferedReader inFromUser;
+    Socket clientSocket;
+    DataOutputStream outToServer;
+    BufferedReader inFromServer;
+    String serverMessage = "";
+    
+    //Server
+    ServerSocket incomeSocket;
+    Socket connectionSocket;
+    BufferedReader inFromClient;
+    DataOutputStream outToClient;
+    String clientMessage = "";
 
     //construct a Pong
     public Pong() throws Exception {
@@ -67,53 +81,47 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
         try {
             System.out.println( "=====Try TCP Client=====" );
 
-            BufferedReader inFromUser = new BufferedReader( new InputStreamReader( System.in ) );
+            inFromUser = new BufferedReader( new InputStreamReader( System.in ) );
             System.out.println( "*****Trying Connection To Server In Socket " + socket  + " *****" );
-            Socket clientSocket;
             
-            clientSocket = new Socket( "localhost", socket );
+            
+            //clientSocket = new Socket( "localhost", socket );
+            clientSocket = new Socket( "192.168.0.47", socket );//ASUS
+            clientSocket = new Socket( "192.168.0.34", socket );//VAIO
             
             System.out.println( "=====Successful Connection To Server=====" );
-            DataOutputStream outToServer = new DataOutputStream( clientSocket.getOutputStream() );
-            BufferedReader inFromServer = new BufferedReader( new InputStreamReader( clientSocket.getInputStream() ) );
+            outToServer = new DataOutputStream( clientSocket.getOutputStream() );
+            inFromServer = new BufferedReader( new InputStreamReader( clientSocket.getInputStream() ) );
             
             System.out.print( "Client: ");
-            String messageToServer = inFromUser.readLine();
-
-            outToServer.writeBytes( messageToServer + '\n' );
-            String responseFromServer = inFromServer.readLine();
-            System.out.println( "Server: " + responseFromServer );
+            String messageToServer = inFromUser.readLine();//THIS <-----------------------------------------------------
+            outToServer.writeBytes( messageToServer + '\n' );//THIS <-----------------------------------------------------
+            
+            //serverMessage = inFromServer.readLine();//THIS <-----------------------------------------------------
+            //System.out.println( "Server: " + serverMessage );
             
             amIPlayerOne = false;
         }
         catch ( Exception e ) {
             System.out.println( "=====Server isnt up, you will be the Server=====" );
             
-            String clientSentence;
-            String capitalizedSentence;
-            
-            ServerSocket incomeSocket = new ServerSocket( socket );
+            incomeSocket = new ServerSocket( socket );
 
             System.out.println( "=====Try TCP Server=====" );
             
             System.out.println( "*****Waiting Connection From Client In Socket " + socket  + " *****" );
-            Socket connectionSocket = incomeSocket.accept();
+            connectionSocket = incomeSocket.accept();
             
             System.out.println( "=====Successful Connection From Client=====" );
-            BufferedReader inFromClient = new BufferedReader( new InputStreamReader( connectionSocket.getInputStream() ) );
-            DataOutputStream outToClient = new DataOutputStream( connectionSocket.getOutputStream() );
+            inFromClient = new BufferedReader( new InputStreamReader( connectionSocket.getInputStream() ) );
+            outToClient = new DataOutputStream( connectionSocket.getOutputStream() );
             System.out.println( "Waiting Text From Client");
-            clientSentence = inFromClient.readLine();
+            clientMessage = inFromClient.readLine();//THIS <-----------------------------------------------------
             
-//            System.out.println( "Text Received From Client: " + clientSentence );
-//            capitalizedSentence = clientSentence.toUpperCase() + '\n';
-//            outToClient.writeBytes( capitalizedSentence );
-//            System.out.println( "Text Sended To Client: " + capitalizedSentence );
-            
+            //outToClient.writeBytes( clientMessage );//THIS <-----------------------------------------------------
+            System.out.println( clientMessage );
             amIPlayerOne = true;
         }
-        
-        
         
         setBackground( Color.GREEN );
 
