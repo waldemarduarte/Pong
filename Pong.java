@@ -100,33 +100,49 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
         System.out.println( "Input: " + otherPlayerMessage );
         String splitedMessage[] = otherPlayerMessage.split( "," );        
         //Structure:
+        //showTitleScreen,playing,gameOver,playerOneScore,playerTwoScore,
         //w,s,pad,ballX,ballY,deltaX,deltaY
         for ( int x = 0; x < splitedMessage.length; x++ ) {
             if ( amIPlayerOne ) {
                 switch ( x ) {
-                    case 0:
+//                    case 0:
+//                        showTitleScreen = Boolean.parseBoolean( splitedMessage[x] );
+//                        break;
+//                    case 1:
+//                        playing = Boolean.parseBoolean( splitedMessage[x] );
+//                        break;
+//                    case 2:
+//                        gameOver = Boolean.parseBoolean( splitedMessage[x] );
+//                        break;
+//                    case 3:
+//                        playerOneScore = Integer.parseInt( splitedMessage[x] );
+//                        break;
+//                    case 4:
+//                        playerTwoScore = Integer.parseInt( splitedMessage[x] );
+//                        break;
+                    case 5:
                         upPressed = Boolean.parseBoolean( splitedMessage[x] );
                         break;
-                    case 1:
+                    case 6:
                         downPressed = Boolean.parseBoolean( splitedMessage[x] );
                         break;
-                    case 2:
+                    case 7:
                         playerTwoPadPositionY = Integer.parseInt( splitedMessage[x] );
                         startStopPlayerTwoPadPosition = playerTwoPadPositionY;
                         break;
-//                    case 3:
+//                    case 8:
 //                        ballPositionX = Integer.parseInt( splitedMessage[x] );
 //                        hitBallPositionX = ballPositionX;
 //                        break;
-//                    case 4:
+//                    case 9:
 //                        ballPositionY = Integer.parseInt( splitedMessage[x] );
 //                        hitBallPositionY = ballPositionY;
 //                        break;
-//                    case 5:
+//                    case 10:
 //                        ballDeltaX = Integer.parseInt( splitedMessage[x] );
 //                        hitBallDeltaX = ballDeltaX;
 //                        break;
-//                    case 6:
+//                    case 11:
 //                        ballDeltaY = Integer.parseInt( splitedMessage[x] );
 //                        hitBallDeltaY = ballDeltaY;
 //                        break;
@@ -137,28 +153,43 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             else {
                 switch ( x ) {
                     case 0:
-                        wPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        showTitleScreen = Boolean.parseBoolean( splitedMessage[x] );
                         break;
                     case 1:
-                        sPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        playing = Boolean.parseBoolean( splitedMessage[x] );
                         break;
                     case 2:
+                        gameOver = Boolean.parseBoolean( splitedMessage[x] );
+                        break;
+                    case 3:
+                        playerOneScore = Integer.parseInt( splitedMessage[x] );
+                        break;
+                    case 4:
+                        playerTwoScore = Integer.parseInt( splitedMessage[x] );
+                        break;
+                    case 5:
+                        wPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        break;
+                    case 6:
+                        sPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        break;
+                    case 7:
                         playerOnePadPositionY = Integer.parseInt( splitedMessage[x] );
                         startStopPlayerOnePadPosition = playerOnePadPositionY;
                         break;
-                    case 3:
+                    case 8:
                         ballPositionX = Integer.parseInt( splitedMessage[x] );
                         hitBallPositionX = ballPositionX;
                         break;
-                    case 4:
+                    case 9:
                         ballPositionY = Integer.parseInt( splitedMessage[x] );
                         hitBallPositionY = ballPositionY;
                         break;
-                    case 5:
+                    case 10:
                         ballDeltaX = Integer.parseInt( splitedMessage[x] );
                         hitBallDeltaX = ballDeltaX;
                         break;
-                    case 6:
+                    case 11:
                         ballDeltaY = Integer.parseInt( splitedMessage[x] );
                         hitBallDeltaY = ballDeltaY;
                         break;
@@ -167,30 +198,20 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 }
             }      
         }
-        
-        
         someActionOtherPlayer = false;
     }
     
     public void sendMessageToOtherPlayer() throws Exception {
-        //System.out.println( "Sending Message: " + myMessageToSend );
-//        g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
-//        g.drawString( "wKey: " + String.valueOf( wPressed ), 100, gameTableBottomtEnd - 60 );
-//        g.drawString( "sKey: " + String.valueOf( sPressed ), 100, gameTableBottomtEnd - 40 );
-//        g.drawString( "padOne: " + String.valueOf( startStopPlayerOnePadPosition ), 100, gameTableBottomtEnd - 20 );
-//
-//        g.drawString( "upKey: " + String.valueOf( upPressed ), 600, gameTableBottomtEnd - 60 );
-//        g.drawString( "downKey: " + String.valueOf( downPressed ), 600, gameTableBottomtEnd - 40 );
-//        g.drawString( "padTwo: " + String.valueOf( startStopPlayerTwoPadPosition ), 600, gameTableBottomtEnd - 20 );
-//
-//        g.drawString( "ballX: " + String.valueOf( hitBallPositionX ), 250, gameTableBottomtEnd - 40 );
-//        g.drawString( "ballY: " + String.valueOf( hitBallPositionY ), 250, gameTableBottomtEnd - 40 );
-//        g.drawString( "DeltaX: " + String.valueOf( hitBallDeltaX ), 350, gameTableBottomtEnd - 20 );
-//        g.drawString( "DeltaY: " + String.valueOf( hitBallDeltaY ), 350, gameTableBottomtEnd - 20 );
         //Structure:
+        //showTitleScreen,playing,gameOver,playerOneScore,playerTwoScore,
         //w,s,pad,ballX,ballY,deltaX,deltaY
         if ( amIPlayerOne ) {
             myMessageToSend = 
+                    showTitleScreen + "," + 
+                    playing + "," + 
+                    gameOver + "," + 
+                    playerOneScore + "," + 
+                    playerTwoScore + "," + 
                     wPressed + "," + 
                     sPressed + "," + 
                     startStopPlayerOnePadPosition + "," + 
@@ -201,6 +222,11 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
         }
         else {
             myMessageToSend = 
+                    showTitleScreen + "," + 
+                    playing + "," + 
+                    gameOver + "," + 
+                    playerOneScore + "," + 
+                    playerTwoScore + "," + 
                     upPressed + "," + 
                     downPressed + "," + 
                     startStopPlayerTwoPadPosition + "," + 
@@ -210,7 +236,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                     hitBallDeltaY + ",";
         }
         outToOtherPlayer.writeBytes( myMessageToSend + '\n' );
-        
+        //System.out.println( "Sending Message: " + myMessageToSend );
     }
 
     public void actionPerformed( ActionEvent e ) {
@@ -500,7 +526,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
 
     public void keyPressed( KeyEvent e ) {
         if ( showTitleScreen ) {
-            if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
+            if ( e.getKeyCode() == KeyEvent.VK_ENTER && amIPlayerOne ) {
                 showTitleScreen = false;
                 playing = true;
             }
