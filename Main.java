@@ -59,6 +59,9 @@ final class ClientOrServerTCP implements Runnable {
         if ( hasIP ) {
             this.ip = ip;
         }
+        System.out.println( "IP To Connect: " + this.ip );
+        //System.out.println( "ServerIP: " + InetAddress.getLocalHost() ); //Doesnt work
+        
         try {
             System.out.println( "=====Try TCP Client=====" );
 
