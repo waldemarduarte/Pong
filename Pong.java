@@ -569,6 +569,13 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             if ( ( e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE ) && amIPlayerOne ) {
                 showTitleScreen = false;
                 playing = true;
+                
+                updateBallPosition = true;
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
         }
         else if( playing ) {
