@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Pong extends JPanel implements ActionListener, KeyListener {
 
@@ -57,74 +59,32 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
     private int startStopPlayerOnePadPosition = playerOnePadPositionY;
     private int startStopPlayerTwoPadPosition = playerTwoPadPositionY;
     
-    private boolean amIPlayerOne = true;
+    boolean amIPlayerOne = true;
+    boolean someActionOtherPlayer = false;
     
-    //Client
-    BufferedReader inFromUser;
-    Socket clientSocket;
-    DataOutputStream outToServer;
-    BufferedReader inFromServer;
-    String serverMessage = "";
+    //Client or Server utilities
+    BufferedReader inFromOtherPlayer;
+    DataOutputStream outToOtherPlayer;
+    String otherPlayerMessage = "";
+    String otherPlayerChange = "";
+    String myMessageToSend = "";
     
-    //Server
-    ServerSocket incomeSocket;
-    Socket connectionSocket;
-    BufferedReader inFromClient;
-    DataOutputStream outToClient;
-    String clientMessage = "";
-
-    //construct a Pong
-    public Pong() throws Exception {
+    //construct a Pong Client
+    public Pong( 
+            boolean amIPlayerOne, 
+            BufferedReader inFromOtherPlayer,
+            DataOutputStream outToOtherPlayer ) throws Exception {
         
-        int socket = 2407;
-        //String ip = "localhost";
-        String ip = "192.168.0.47";//ASUS
-        //String ip = "192.168.0.34";//VAIO
+        this.amIPlayerOne = amIPlayerOne;
+        this.inFromOtherPlayer = inFromOtherPlayer;
+        this.outToOtherPlayer = outToOtherPlayer;
         
-        
-        
-        try {
-            System.out.println( "=====Try TCP Client=====" );
-
-            inFromUser = new BufferedReader( new InputStreamReader( System.in ) );
-            System.out.println( "*****Trying Connection To Server In Socket " + socket  + " *****" );
-            
-            clientSocket = new Socket( ip, socket );
-            
-            System.out.println( "=====Successful Connection To Server=====" );
-            outToServer = new DataOutputStream( clientSocket.getOutputStream() );
-            inFromServer = new BufferedReader( new InputStreamReader( clientSocket.getInputStream() ) );
-            
-            //System.out.print( "Client: ");
-            //String messageToServer = inFromUser.readLine();//THIS <-----------------------------------------------------
-            //outToServer.writeBytes( messageToServer + '\n' );//THIS <-----------------------------------------------------
-            
-            //serverMessage = inFromServer.readLine();//THIS <-----------------------------------------------------
-            //System.out.println( "Server: " + serverMessage );
-            
-            amIPlayerOne = false;
-        }
-        catch ( Exception e ) {
-            System.out.println( "=====Server isnt up, you will be the Server=====" );
-            
-            incomeSocket = new ServerSocket( socket );
-
-            System.out.println( "=====Try TCP Server=====" );
-            
-            System.out.println( "*****Waiting Connection From Client In Socket " + socket  + " *****" );
-            connectionSocket = incomeSocket.accept();
-            
-            System.out.println( "=====Successful Connection From Client=====" );
-            inFromClient = new BufferedReader( new InputStreamReader( connectionSocket.getInputStream() ) );
-            outToClient = new DataOutputStream( connectionSocket.getOutputStream() );
-            System.out.println( "Waiting Client" );
-            clientMessage = inFromClient.readLine();//THIS <-----------------------------------------------------
-            
-            //outToClient.writeBytes( clientMessage );//THIS <-----------------------------------------------------
-            System.out.println( clientMessage );
-            amIPlayerOne = true;
-        }
-        
+        neededStufs();
+    }
+    
+    //construct a Pong Server
+    
+    public void  neededStufs() {
         setBackground( Color.GREEN );
 
         //listen to key presses
@@ -135,12 +95,137 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
         javax.swing.Timer timer = new javax.swing.Timer( 1000/60, this );
         timer.start();
     }
+    
+    public void receiveMessageFromOtherPlayer() throws Exception {
+        System.out.println( "Input: " + otherPlayerMessage );
+        String splitedMessage[] = otherPlayerMessage.split( "," );        
+        //Structure:
+        //w,s,pad,ballX,ballY,deltaX,deltaY
+        for ( int x = 0; x < splitedMessage.length; x++ ) {
+            if ( amIPlayerOne ) {
+                switch ( x ) {
+                    case 0:
+                        upPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        break;
+                    case 1:
+                        downPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        break;
+                    case 2:
+                        playerTwoPadPositionY = Integer.parseInt( splitedMessage[x] );
+                        startStopPlayerTwoPadPosition = playerTwoPadPositionY;
+                        break;
+//                    case 3:
+//                        ballPositionX = Integer.parseInt( splitedMessage[x] );
+//                        hitBallPositionX = ballPositionX;
+//                        break;
+//                    case 4:
+//                        ballPositionY = Integer.parseInt( splitedMessage[x] );
+//                        hitBallPositionY = ballPositionY;
+//                        break;
+//                    case 5:
+//                        ballDeltaX = Integer.parseInt( splitedMessage[x] );
+//                        hitBallDeltaX = ballDeltaX;
+//                        break;
+//                    case 6:
+//                        ballDeltaY = Integer.parseInt( splitedMessage[x] );
+//                        hitBallDeltaY = ballDeltaY;
+//                        break;
+                    default:
+                        break;
+                }
+            }
+            else {
+                switch ( x ) {
+                    case 0:
+                        wPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        break;
+                    case 1:
+                        sPressed = Boolean.parseBoolean( splitedMessage[x] );
+                        break;
+                    case 2:
+                        playerOnePadPositionY = Integer.parseInt( splitedMessage[x] );
+                        startStopPlayerOnePadPosition = playerOnePadPositionY;
+                        break;
+                    case 3:
+                        ballPositionX = Integer.parseInt( splitedMessage[x] );
+                        hitBallPositionX = ballPositionX;
+                        break;
+                    case 4:
+                        ballPositionY = Integer.parseInt( splitedMessage[x] );
+                        hitBallPositionY = ballPositionY;
+                        break;
+                    case 5:
+                        ballDeltaX = Integer.parseInt( splitedMessage[x] );
+                        hitBallDeltaX = ballDeltaX;
+                        break;
+                    case 6:
+                        ballDeltaY = Integer.parseInt( splitedMessage[x] );
+                        hitBallDeltaY = ballDeltaY;
+                        break;
+                    default:
+                        break;
+                }
+            }      
+        }
+        
+        
+        someActionOtherPlayer = false;
+    }
+    
+    public void sendMessageToOtherPlayer() throws Exception {
+        //System.out.println( "Sending Message: " + myMessageToSend );
+//        g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
+//        g.drawString( "wKey: " + String.valueOf( wPressed ), 100, gameTableBottomtEnd - 60 );
+//        g.drawString( "sKey: " + String.valueOf( sPressed ), 100, gameTableBottomtEnd - 40 );
+//        g.drawString( "padOne: " + String.valueOf( startStopPlayerOnePadPosition ), 100, gameTableBottomtEnd - 20 );
+//
+//        g.drawString( "upKey: " + String.valueOf( upPressed ), 600, gameTableBottomtEnd - 60 );
+//        g.drawString( "downKey: " + String.valueOf( downPressed ), 600, gameTableBottomtEnd - 40 );
+//        g.drawString( "padTwo: " + String.valueOf( startStopPlayerTwoPadPosition ), 600, gameTableBottomtEnd - 20 );
+//
+//        g.drawString( "ballX: " + String.valueOf( hitBallPositionX ), 250, gameTableBottomtEnd - 40 );
+//        g.drawString( "ballY: " + String.valueOf( hitBallPositionY ), 250, gameTableBottomtEnd - 40 );
+//        g.drawString( "DeltaX: " + String.valueOf( hitBallDeltaX ), 350, gameTableBottomtEnd - 20 );
+//        g.drawString( "DeltaY: " + String.valueOf( hitBallDeltaY ), 350, gameTableBottomtEnd - 20 );
+        //Structure:
+        //w,s,pad,ballX,ballY,deltaX,deltaY
+        if ( amIPlayerOne ) {
+            myMessageToSend = 
+                    wPressed + "," + 
+                    sPressed + "," + 
+                    startStopPlayerOnePadPosition + "," + 
+                    hitBallPositionX + "," + 
+                    hitBallPositionY + "," + 
+                    hitBallDeltaX + "," + 
+                    hitBallDeltaY + ",";
+        }
+        else {
+            myMessageToSend = 
+                    upPressed + "," + 
+                    downPressed + "," + 
+                    startStopPlayerTwoPadPosition + "," + 
+                    hitBallPositionX + "," + 
+                    hitBallPositionY + "," + 
+                    hitBallDeltaX + "," + 
+                    hitBallDeltaY + ",";
+        }
+        outToOtherPlayer.writeBytes( myMessageToSend + '\n' );
+        
+    }
 
     public void actionPerformed( ActionEvent e ) {
         step();
     }
 
     public void step() {
+        
+        if ( someActionOtherPlayer ) {
+            try {
+                receiveMessageFromOtherPlayer();
+            } catch ( Exception ex ) {
+                Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+            }
+        }
 
         if( playing ) {
             //move player 1
@@ -148,11 +233,25 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 if ( playerOnePadPositionY - paddleSpeed > gameTableToptEnd ) {
                     playerOnePadPositionY -= paddleSpeed;
                 }
+//                if ( amIPlayerOne ) {
+//                    try {
+//                        sendMessageToOtherPlayer();
+//                    } catch ( Exception ex ) {
+//                        Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+//                    }
+//                }
             }
             if ( sPressed ) {
                 if ( playerOnePadPositionY + paddleSpeed + playerOnePadHeight < gameTableBottomtEnd /*getHeight()*/ ) {
                     playerOnePadPositionY += paddleSpeed;
                 }
+//                if ( amIPlayerOne ) {
+//                    try {
+//                        sendMessageToOtherPlayer();
+//                    } catch ( Exception ex ) {
+//                        Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+//                    }
+//                }
             }
 
             //move player 2
@@ -160,11 +259,25 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 if ( playerTwoPadPositionY - paddleSpeed > gameTableToptEnd ) {
                     playerTwoPadPositionY -= paddleSpeed;
                 }
+//                if ( !amIPlayerOne ) {
+//                    try {
+//                        sendMessageToOtherPlayer();
+//                    } catch ( Exception ex ) {
+//                        Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+//                    }
+//                }
             }
             if ( downPressed ) {
                 if ( playerTwoPadPositionY + paddleSpeed + playerTwoPadHeight < gameTableBottomtEnd /*getHeight()*/  ) {
                     playerTwoPadPositionY += paddleSpeed;
                 }
+//                if ( !amIPlayerOne ) {
+//                    try {
+//                        sendMessageToOtherPlayer();
+//                    } catch ( Exception ex ) {
+//                        Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+//                    }
+//                }
             }
 
             //where will the ball be after it moves?
@@ -189,6 +302,11 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 hitBallPositionY = ballPositionY;
                 hitBallDeltaX = ballDeltaX;
                 hitBallDeltaY = ballDeltaY;
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
 
             //will the ball go off the left side?
@@ -228,6 +346,11 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 hitBallPositionY = ballPositionY;
                 hitBallDeltaX = ballDeltaX;
                 hitBallDeltaY = ballDeltaY;
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
 
             //will the ball go off the right side?
@@ -267,6 +390,11 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 hitBallPositionY = ballPositionY;
                 hitBallDeltaX = ballDeltaX;
                 hitBallDeltaY = ballDeltaY;
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
 
             //move the ball
@@ -320,10 +448,10 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             g.drawString( "downKey: " + String.valueOf( downPressed ), 600, gameTableBottomtEnd - 40 );
             g.drawString( "padTwo: " + String.valueOf( startStopPlayerTwoPadPosition ), 600, gameTableBottomtEnd - 20 );
             
-            g.drawString( "ballX: " + String.valueOf( hitBallPositionX ), 200, gameTableBottomtEnd - 40 );
-            g.drawString( "ballY: " + String.valueOf( hitBallPositionY ), 500, gameTableBottomtEnd - 40 );
-            g.drawString( "DeltaX: " + String.valueOf( hitBallDeltaX ), 200, gameTableBottomtEnd - 20 );
-            g.drawString( "DeltaY: " + String.valueOf( hitBallDeltaY ), 500, gameTableBottomtEnd - 20 );
+            g.drawString( "ballX: " + String.valueOf( hitBallPositionX ), 250, gameTableBottomtEnd - 40 );
+            g.drawString( "ballY: " + String.valueOf( hitBallPositionY ), 250, gameTableBottomtEnd - 20 );
+            g.drawString( "DeltaX: " + String.valueOf( hitBallDeltaX ), 350, gameTableBottomtEnd - 40 );
+            g.drawString( "DeltaY: " + String.valueOf( hitBallDeltaY ), 350, gameTableBottomtEnd - 20 );
 
             //draw "goal lines" on each side
             g.drawLine( playerOneRight, 0, playerOneRight, gameTableBottomtEnd + 100 /*getHeight()*/ );
@@ -377,22 +505,51 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 playing = true;
             }
         }
-        else if( playing ){
-            if ( e.getKeyCode() == KeyEvent.VK_W ) {
+        else if( playing ) {
+            if ( e.getKeyCode() == KeyEvent.VK_W && amIPlayerOne ) {
                 wPressed = true;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
+                
+                myMessageToSend = "w";
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
+                
             }
-            else if ( e.getKeyCode() == KeyEvent.VK_S ) {
+            else if ( e.getKeyCode() == KeyEvent.VK_S && amIPlayerOne ) {
                 sPressed = true;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
+                
+                myMessageToSend = "s";
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
-            else if ( e.getKeyCode() == KeyEvent.VK_UP ) {
+            else if ( e.getKeyCode() == KeyEvent.VK_UP && !amIPlayerOne ) {
                 upPressed = true;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
+                
+                myMessageToSend = "up";
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
-            else if ( e.getKeyCode() == KeyEvent.VK_DOWN ) {
+            else if ( e.getKeyCode() == KeyEvent.VK_DOWN && !amIPlayerOne ) {
                 downPressed = true;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
+                
+                myMessageToSend = "down";
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
         }
         else if ( gameOver ) {
@@ -413,21 +570,45 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
 
     public void keyReleased( KeyEvent e ) {
         if ( playing ) {
-            if ( e.getKeyCode() == KeyEvent.VK_W ) {
+            if ( e.getKeyCode() == KeyEvent.VK_W && amIPlayerOne ) {
                 wPressed = false;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
+                
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
-            else if ( e.getKeyCode() == KeyEvent.VK_S ) {
+            else if ( e.getKeyCode() == KeyEvent.VK_S && amIPlayerOne ) {
                 sPressed = false;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
+                
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
-            else if ( e.getKeyCode() == KeyEvent.VK_UP ) {
+            else if ( e.getKeyCode() == KeyEvent.VK_UP && !amIPlayerOne ) {
                 upPressed = false;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
+                
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
-            else if ( e.getKeyCode() == KeyEvent.VK_DOWN ) {
+            else if ( e.getKeyCode() == KeyEvent.VK_DOWN && !amIPlayerOne ) {
                 downPressed = false;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
+                
+                try {
+                    sendMessageToOtherPlayer();
+                } catch ( Exception ex ) {
+                    Logger.getLogger( Pong.class.getName() ).log( Level.SEVERE, null, ex );
+                }
             }
         }
     }
