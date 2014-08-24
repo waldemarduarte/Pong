@@ -451,10 +451,10 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
             
             if ( amIPlayerOne ) {
-                g.drawString( "You are Player 1 (Left side)", 280, 350 );
+                g.drawString( "You are Player 1 (Left side)", 260, 350 );
             }
             else {
-                g.drawString( "You are Player 2 (Right side)", 280, 350 );
+                g.drawString( "You are Player 2 (Right side)", 260, 350 );
             }
 
             g.drawString( "Press 'ENTER' to play.", 300, 400 );
@@ -509,9 +509,17 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 if ( amIPlayerOne ) {
                     g.drawString( "You Won! :D", 270, 200 );
                 }
+                else {
+                    g.drawString( "You lost... :(", 270, 200 );
+                }
             }
             else {
-                g.drawString( "You lost... :(", 270, 200 );
+                if ( amIPlayerOne ) {
+                    g.drawString( "You lost... :(", 270, 200 );
+                }
+                else {
+                    g.drawString( "You Won! :D", 270, 200 );
+                }
             }
             
             g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
