@@ -155,7 +155,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 }
             }
             else {
-                boolean updBallPos = Boolean.parseBoolean( splitedMessage[11] );
+                boolean updBallPos = Boolean.parseBoolean( splitedMessage[12] );
                 switch ( x ) {
                     case 0:
                         showTitleScreen = Boolean.parseBoolean( splitedMessage[x] );
