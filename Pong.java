@@ -61,6 +61,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
     
     boolean amIPlayerOne = true;
     boolean someActionOtherPlayer = false;
+    boolean updateBallPosition = false;
     
     //Client or Server utilities
     BufferedReader inFromOtherPlayer;
@@ -146,11 +147,15 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
 //                        ballDeltaY = Integer.parseInt( splitedMessage[x] );
 //                        hitBallDeltaY = ballDeltaY;
 //                        break;
+//                    case 12:
+//                        updateBallPosition = Boolean.parseBoolean( splitedMessage[x] );
+//                        break;
                     default:
                         break;
                 }
             }
             else {
+                boolean updBallPos = Boolean.parseBoolean( splitedMessage[11] );
                 switch ( x ) {
                     case 0:
                         showTitleScreen = Boolean.parseBoolean( splitedMessage[x] );
@@ -178,21 +183,32 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                         startStopPlayerOnePadPosition = playerOnePadPositionY;
                         break;
                     case 8:
-                        ballPositionX = Integer.parseInt( splitedMessage[x] );
-                        hitBallPositionX = ballPositionX;
+                        if ( updBallPos ) {
+                            ballPositionX = Integer.parseInt( splitedMessage[x] );
+                            hitBallPositionX = ballPositionX;
+                        }
                         break;
                     case 9:
-                        ballPositionY = Integer.parseInt( splitedMessage[x] );
-                        hitBallPositionY = ballPositionY;
+                        if ( updBallPos ) {
+                            ballPositionY = Integer.parseInt( splitedMessage[x] );
+                            hitBallPositionY = ballPositionY;
+                        }
                         break;
                     case 10:
-                        ballDeltaX = Integer.parseInt( splitedMessage[x] );
-                        hitBallDeltaX = ballDeltaX;
+                        if ( updBallPos ) {
+                            ballDeltaX = Integer.parseInt( splitedMessage[x] );
+                            hitBallDeltaX = ballDeltaX;
+                        }
                         break;
                     case 11:
-                        ballDeltaY = Integer.parseInt( splitedMessage[x] );
-                        hitBallDeltaY = ballDeltaY;
+                        if ( updBallPos ) {
+                            ballDeltaY = Integer.parseInt( splitedMessage[x] );
+                            hitBallDeltaY = ballDeltaY;
+                        }
                         break;
+//                    case 12:
+//                        updateBallPosition = Boolean.parseBoolean( splitedMessage[x] );
+//                        break;
                     default:
                         break;
                 }
@@ -224,7 +240,8 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                     hitBallPositionX + "," + 
                     hitBallPositionY + "," + 
                     hitBallDeltaX + "," + 
-                    hitBallDeltaY + ",";
+                    hitBallDeltaY + "," + 
+                    updateBallPosition;
         }
         else {
             myMessageToSend = 
@@ -239,8 +256,10 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                     hitBallPositionX + "," + 
                     hitBallPositionY + "," + 
                     hitBallDeltaX + "," + 
-                    hitBallDeltaY + ",";
+                    hitBallDeltaY + "," + 
+                    updateBallPosition;
         }
+        updateBallPosition = false;
         outToOtherPlayer.writeBytes( myMessageToSend + '\n' );
         //System.out.println( "Sending Message: " + myMessageToSend );
     }
@@ -371,6 +390,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                     ballDeltaX *= -1;
                 }
                 
+                updateBallPosition = true;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -412,6 +432,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                     ballDeltaX *= -1;
                 }
                 
+                updateBallPosition = true;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -521,10 +542,10 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
             
             if ( amIPlayerOne ) {
-                g.drawString( "You are Player 1 (Left side)", 260, 350 );
+                g.drawString( "You are Player 1 (Left side)", 255, 350 );
             }
             else {
-                g.drawString( "You are Player 2 (Right side)", 260, 350 );
+                g.drawString( "You are Player 2 (Right side)", 250, 350 );
             }
             
             g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
@@ -550,7 +571,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 wPressed = true;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
                 
-                myMessageToSend = "w";
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -562,7 +583,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 sPressed = true;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
                 
-                myMessageToSend = "s";
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -573,7 +594,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 upPressed = true;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
                 
-                myMessageToSend = "up";
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -584,7 +605,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 downPressed = true;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
                 
-                myMessageToSend = "down";
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -614,6 +635,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 wPressed = false;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
                 
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -624,6 +646,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 sPressed = false;
                 startStopPlayerOnePadPosition = playerOnePadPositionY;
                 
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -634,6 +657,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 upPressed = false;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
                 
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -644,6 +668,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 downPressed = false;
                 startStopPlayerTwoPadPosition = playerTwoPadPositionY;
                 
+                updateBallPosition = false;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
