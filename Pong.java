@@ -451,10 +451,10 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
             
             if ( amIPlayerOne ) {
-                g.drawString( "You are Player 1 (Left side)", 300, 350 );
+                g.drawString( "You are Player 1 (Left side)", 280, 350 );
             }
             else {
-                g.drawString( "You are Player 2 (Right side)", 300, 350 );
+                g.drawString( "You are Player 2 (Right side)", 280, 350 );
             }
 
             g.drawString( "Press 'ENTER' to play.", 300, 400 );
@@ -506,19 +506,29 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             
             g.setFont( new Font( Font.DIALOG, Font.BOLD, 36 ) );
             if ( playerOneScore > playerTwoScore ) {
-                g.drawString( "Player 1 Wins!", 270, 200 );
+                if ( amIPlayerOne ) {
+                    g.drawString( "You Won! :D", 270, 200 );
+                }
             }
             else {
-                g.drawString( "Player 2 Wins!", 270, 200 );
+                g.drawString( "You lost... :(", 270, 200 );
             }
             
-            //draw the scores
             g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
+            
+            if ( amIPlayerOne ) {
+                g.drawString( "You are Player 1 (Left side)", 280, 350 );
+            }
+            else {
+                g.drawString( "You are Player 2 (Right side)", 280, 350 );
+            }
+            
+            g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
+            g.drawString( "Press 'ENTER' to go to main.", 250, 400 );
+            
+            //draw the scores
             g.drawString( "Player #1: " + String.valueOf( playerOneScore ), 200, gameTableBottomtEnd + 40 );
             g.drawString( "Player #2: " + String.valueOf( playerTwoScore ), 500, gameTableBottomtEnd + 40 );
-
-            g.setFont( new Font( Font.DIALOG, Font.BOLD, 18 ) );
-            g.drawString( "Press 'ENTER' to restart the game.", 250, 400 );
         }
     }
 
