@@ -11,8 +11,15 @@ public class Main {
     	JFrame frame = new JFrame( "Pong CC8" );
     	frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
     	frame.setLayout( new BorderLayout() );
+        
+        boolean hasIP = false;
+        String ip = "";
+        if ( args.length > 0 ) {
+            hasIP = true;
+            ip = args[0];
+        }
     	
-        ClientOrServerTCP clientOrServerTCP = new ClientOrServerTCP( frame );
+        ClientOrServerTCP clientOrServerTCP = new ClientOrServerTCP( frame, hasIP, ip );
         
         Thread thread = new Thread( clientOrServerTCP );
         thread.start();
@@ -47,8 +54,11 @@ final class ClientOrServerTCP implements Runnable {
     //Player one?
     boolean amIPlayerOne = true;
 
-    public ClientOrServerTCP( JFrame frame ) throws Exception {
+    public ClientOrServerTCP( JFrame frame, boolean hasIP, String ip ) throws Exception {
         this.frame = frame;
+        if ( hasIP ) {
+            this.ip = ip;
+        }
         try {
             System.out.println( "=====Try TCP Client=====" );
 
