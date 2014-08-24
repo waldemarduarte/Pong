@@ -202,6 +202,12 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
     }
     
     public void sendMessageToOtherPlayer() throws Exception {
+        if ( amIPlayerOne ) {
+            hitBallPositionX = ballPositionX;
+            hitBallPositionY = ballPositionY;
+            hitBallDeltaX = ballDeltaX;
+            hitBallDeltaY = ballDeltaY;
+        }
         //Structure:
         //showTitleScreen,playing,gameOver,playerOneScore,playerTwoScore,
         //w,s,pad,ballX,ballY,deltaX,deltaY
@@ -324,10 +330,6 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             if ( nextBallTop < 0 || nextBallBottom > gameTableBottomtEnd /*getHeight()*/ ) {
                 ballDeltaY *= -1;
                 
-                hitBallPositionX = ballPositionX;
-                hitBallPositionY = ballPositionY;
-                hitBallDeltaX = ballDeltaX;
-                hitBallDeltaY = ballDeltaY;
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -368,10 +370,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                     }
                     ballDeltaX *= -1;
                 }
-                hitBallPositionX = ballPositionX;
-                hitBallPositionY = ballPositionY;
-                hitBallDeltaX = ballDeltaX;
-                hitBallDeltaY = ballDeltaY;
+                
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -412,10 +411,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                     }
                     ballDeltaX *= -1;
                 }
-                hitBallPositionX = ballPositionX;
-                hitBallPositionY = ballPositionY;
-                hitBallDeltaX = ballDeltaX;
-                hitBallDeltaY = ballDeltaY;
+                
                 try {
                     sendMessageToOtherPlayer();
                 } catch ( Exception ex ) {
@@ -457,7 +453,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
                 g.drawString( "You are Player 2 (Right side)", 270, 350 );
             }
 
-            g.drawString( "Press 'ENTER' to play.", 300, 400 );
+            g.drawString( "Press 'ENTER' to play.", 290, 400 );
         }
         else if ( playing ) {
             
