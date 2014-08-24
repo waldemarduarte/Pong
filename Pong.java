@@ -473,8 +473,13 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             else {
                 g.drawString( "You are Player 2 (Right side)", 270, 350 );
             }
-
-            g.drawString( "Press 'ENTER' to play.", 290, 400 );
+            
+            if ( amIPlayerOne ) {
+                g.drawString( "Press 'ENTER' to play.", 290, 400 );
+            }
+            else {
+                g.drawString( "Wait Player 1, be prepared.", 275, 400 );
+            }
         }
         else if ( playing ) {
             
@@ -561,7 +566,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
 
     public void keyPressed( KeyEvent e ) {
         if ( showTitleScreen ) {
-            if ( e.getKeyCode() == KeyEvent.VK_ENTER && amIPlayerOne ) {
+            if ( ( e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE ) && amIPlayerOne ) {
                 showTitleScreen = false;
                 playing = true;
             }
@@ -614,7 +619,7 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
             }
         }
         else if ( gameOver ) {
-            if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
+            if ( e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE ) {
                 gameOver = false;
                 showTitleScreen = true;
                 playerOnePadPositionY = ( gameTableToptEnd + gameTableBottomtEnd ) / 2;
