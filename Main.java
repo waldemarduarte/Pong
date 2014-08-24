@@ -36,8 +36,8 @@ final class ClientOrServerTCP implements Runnable {
     
     //Socket, IP
     int socket = 2407;
-    String ip = "localhost";
-    //String ip = "192.168.0.47";//ASUS
+    //String ip = "localhost";
+    String ip = "192.168.0.47";//ASUS
     //String ip = "192.168.0.34";//VAIO
     
     //Pong
